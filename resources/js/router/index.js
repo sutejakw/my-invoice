@@ -1,12 +1,17 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import invoiceIndex from "../components/invoices/index.vue";
 import notFound from "../components/NotFound.vue";
+import invoiceIndex from "../components/invoices/index.vue";
+import invoiceForm from "../components/invoices/create.vue";
 
 const routes = [
     {
         path: "/",
         component: invoiceIndex,
+    },
+    {
+        path: "/invoice/create",
+        component: invoiceForm,
     },
     {
         path: "/:pathMatch(.*)*",
