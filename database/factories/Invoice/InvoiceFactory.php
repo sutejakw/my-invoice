@@ -1,12 +1,15 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\Factories\Invoice;
 
-use App\Models\Customer;
+use App\Models\Invoice\Invoice;
+use App\Models\Customer\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class InvoiceFactory extends Factory
 {
+    protected $model = Invoice::class;
+
     /**
      * Define the model's default state.
      *

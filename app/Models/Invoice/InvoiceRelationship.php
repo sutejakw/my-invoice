@@ -2,7 +2,7 @@
 
 namespace App\Models\Invoice;
 
-use App\Models\Customer;
+use App\Models\Customer\Customer;
 
 trait InvoiceRelationship
 {

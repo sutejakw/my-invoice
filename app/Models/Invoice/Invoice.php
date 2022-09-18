@@ -2,8 +2,8 @@
 
 namespace App\Models\Invoice;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Invoice extends Model
 {
@@ -26,5 +26,4 @@ class Invoice extends Model
         'discount',
         'total',
     ];
-
 }
