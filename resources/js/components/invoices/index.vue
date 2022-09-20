@@ -27,7 +27,7 @@ const search = async () => {
 const newInvoice = async () => {
     let form = await axios.get("/api/invoices/create");
 
-    router.push("/invoice/create");
+    router.push("/create");
 };
 </script>
 
@@ -107,7 +107,7 @@ const newInvoice = async () => {
                         <p>{{ invoice.date }}</p>
                         <p>#{{ invoice.number }}</p>
                         <p>
-                            {{ invoice.customer_name }}
+                            {{ invoice.customer.fullname }}
                         </p>
                         <p>{{ invoice.due_date }}</p>
                         <p>$ {{ invoice.total }}</p>
