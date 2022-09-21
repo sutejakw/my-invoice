@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\CustomerResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class InvoiceResource extends JsonResource
@@ -18,7 +19,7 @@ class InvoiceResource extends JsonResource
             'id' => $this->id,
             'date' => $this->date,
             'number' => $this->number,
-            'customer_name' => $this->customer->fullname,
+            'customer' => new CustomerResource($this->customer),
             'due_date' => $this->due_date,
             'total' => $this->total
         ];

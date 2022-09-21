@@ -25,6 +25,7 @@ Route::controller(InvoiceController::class)->prefix('invoices')->name('invoices.
     Route::get('/', 'index')->name('index');
     Route::get('/search', 'searchInvoice')->name('search');
     Route::get('/create', 'create')->name('create');
+    Route::post('/store', 'store')->name('store');
 });
 
 Route::controller(CustomerController::class)->prefix('customers')->name('customers.')->group(function () {

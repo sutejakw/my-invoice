@@ -8,8 +8,11 @@ use App\Models\Counter\Counter;
 use App\Models\Invoice\Invoice;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\ResponseFormatter;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InvoiceResource;
+use App\Http\Requests\Invoice\StoreInvoiceRequest;
+use App\Models\InvoiceItem\InvoiceItem;
 
 class InvoiceController extends Controller
 {
@@ -21,7 +24,7 @@ class InvoiceController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $resource = Invoice::with('customer')->get();
+            $resource = Invoice::with('customer')->orderBy('id', 'DESC')->get();
             $invoices = InvoiceResource::collection($resource);
 
             return ResponseFormatter::success($invoices);
@@ -34,6 +37,7 @@ class InvoiceController extends Controller
     /**
      * Search invoice by id
      * 
+     * @param \Illuminate\Http\Request  $request
      * @return JsonResponse
      */
     public function searchInvoice(Request $request): JsonResponse
@@ -61,7 +65,6 @@ class InvoiceController extends Controller
     public function create(): JsonResponse
     {
         $counter = Counter::where('key', 'invoice')->first();
-        $random = Counter::where('key', 'invoice')->first();
 
         $invoice = Invoice::orderBy('id', 'DESC')->first();
         if ($invoice) {
@@ -91,5 +94,45 @@ class InvoiceController extends Controller
         ];
 
         return ResponseFormatter::success($formData);
+    }
+
+    /**
+     * Create a new invoice
+     * 
+     * @param \Illuminate\Http\Request  $request
+     * @return JsonResponse
+     */
+    public function store(StoreInvoiceRequest $request): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $invoice = Invoice::create([
+                'customer_id' => $request->customer_id,
+                'date' => $request->date,
+                'due_date' => $request->due_date,
+                'number' => $request->number,
+                'reference' => $request->ference,
+                'discount' => $request->discount,
+                'sub_total' => $request->subtotal,
+                'total' => $request->total,
+                'terms_and_conditions' => $request->terms_and_conditions,
+            ]);
+
+            foreach (json_decode($request->invoice_item) as $invoice_item) {
+                InvoiceItem::create([
+                    'invoice_id' => $invoice->id,
+                    'product_id' => $invoice_item->id,
+                    'unit_price' => $invoice_item->unit_price,
+                    'quantity' => $invoice_item->quantity,
+                ]);
+            }
+            DB::commit();
+
+            return ResponseFormatter::success($invoice);
+        } catch (Exception $e) {
+
+            return ResponseFormatter::error(null, $e->getMessage());
+            DB::rollBack();
+        }
     }
 }

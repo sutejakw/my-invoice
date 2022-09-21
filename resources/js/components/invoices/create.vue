@@ -1,6 +1,7 @@
 <script setup>
 import axios from "axios";
 import { onMounted, ref } from "vue";
+import router from "../../router";
 
 let form = ref([]);
 let allCustomers = ref([]);
@@ -73,8 +74,43 @@ const subTotal = () => {
 
 const grandTotal = () => {
     const discount = (form.value.discount / 100) * subTotal();
-    console.log(discount);
-    return subTotal() - discount;
+    return Math.ceil(subTotal() - discount);
+};
+
+const onSave = async () => {
+    if (listCarts.value.length >= 1) {
+        let subtotal = 0;
+        subtotal = subTotal();
+
+        let grandtotal = 0;
+        grandtotal = subTotal();
+
+        // try {
+        await axios
+            .post("/api/invoices/store", {
+                customer_id: customer_id.value,
+                date: form.value.date,
+                due_date: form.value.due_date,
+                number: form.value.number,
+                reference: form.value.reference,
+                discount: form.value.discount,
+                sub_total: subtotal,
+                total: grandtotal,
+                terms_and_conditions: form.value.terms_and_conditions,
+                invoice_item: JSON.stringify(listCarts.value),
+            })
+            .then((response) => {
+                // redirect to home
+                listCarts.value = [];
+                router.push("/");
+            })
+            .catch((error) => {
+                alert(error.response.data.message);
+            });
+        // } catch (e) {
+        //     alert(e.response.data.message);
+        // }
+    }
 };
 </script>
 
@@ -113,6 +149,7 @@ const grandTotal = () => {
                         <p class="my-1">Date</p>
                         <input
                             id="date"
+                            name="date"
                             placeholder="dd-mm-yyyy"
                             type="date"
                             class="input"
@@ -122,9 +159,11 @@ const grandTotal = () => {
                         <p class="my-1">Due Date</p>
                         <input
                             id="due_date"
+                            name="due_date"
                             type="date"
                             class="input"
                             v-model="form.due_date"
+                            required
                         />
                     </div>
                     <div>
@@ -136,6 +175,7 @@ const grandTotal = () => {
                         />
                         <p class="my-1">Reference(Optional)</p>
                         <input
+                            name="reference"
                             type="text"
                             class="input"
                             v-model="form.reference"
@@ -229,7 +269,7 @@ const grandTotal = () => {
             <div class="card__header" style="margin-top: 40px">
                 <div></div>
                 <div>
-                    <a class="btn btn-secondary"> Save </a>
+                    <a class="btn btn-secondary" @click="onSave"> Save </a>
                 </div>
             </div>
         </div>
