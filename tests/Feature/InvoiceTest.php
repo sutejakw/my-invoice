@@ -2,13 +2,24 @@
 
 namespace Tests\Feature;
 
-use App\Models\Invoice\Invoice;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use App\Models\Invoice\Invoice;
+use App\Models\Product\Product;
+use App\Models\Customer\Customer;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class InvoiceTest extends TestCase
 {
+    use WithFaker;
+    use RefreshDatabase;
+
+    protected function setUp(): void 
+    {
+        parent::setUp();
+        $this->seed();
+    }
+
     /**
      * Test get all invoice data.
      *
@@ -27,8 +38,10 @@ class InvoiceTest extends TestCase
      */
     public function test_search_invoice(): void
     {
-        $response = $this->getJson(route('invoices.search'), [
-            's' => Invoice::get()->random()->id
+        $invoice = Invoice::factory()->create();
+
+        $response = $this->get(route('invoices.search'), [
+            's' => $invoice->id
         ]);
         $response->assertStatus(200);
     }
@@ -41,6 +54,46 @@ class InvoiceTest extends TestCase
     public function test_create_invoice_form(): void
     {
         $response = $this->getJson(route('invoices.create'));
+        $response->assertStatus(200);
+    }
+
+    /**
+     * Test store invoice.
+     *
+     * @return void
+     */
+    public function test_store_invoice(): void
+    {
+        $product = Product::factory()->create();
+        $discount = $this->faker->numberBetween(1, 100);
+
+        $invoice_items[] = [
+                'id' => $product->id,
+                'item_code' => $product->item_code,
+                'description' => $product->description,
+                'unit_price' => $product->unit_price,
+                'quantity' => 1,
+        ];
+
+        $sub_total = $invoice_items[0]['unit_price'] * $invoice_items[0]['quantity'];
+        $total = ($discount / 100) * $sub_total;
+        $grand_total = ceil($sub_total - $total);
+
+        $invoice = [
+            'customer_id' => Customer::factory()->create()->id,
+            'date' => date('Y-m-d'),
+            'due_date' => date('Y-m-d'),
+            'number' => 'INV-'.$this->faker->numberBetween(1, 1000),
+            'reference' => $this->faker->word,
+            'discount' => $discount,
+            'subtotal' => $sub_total,
+            'total' => $grand_total,
+            'terms_and_conditions' => $this->faker->sentence(3),
+            'invoice_item' => json_encode($invoice_items, true),
+        ];
+
+        $response = $this->post('/api/invoices/store', $invoice);
+
         $response->assertStatus(200);
     }
 }
