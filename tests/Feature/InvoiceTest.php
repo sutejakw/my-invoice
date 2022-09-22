@@ -8,17 +8,20 @@ use App\Models\Product\Product;
 use App\Models\Customer\Customer;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\CreatesApplication;
 
 class InvoiceTest extends TestCase
 {
     use WithFaker;
     use RefreshDatabase;
+    use CreatesApplication;
 
-    protected function setUp(): void 
-    {
-        parent::setUp();
-        $this->seed();
-    }
+    /**
+     * Indicates whether the default seeder should run before each test.
+     *
+     * @var bool
+     */
+    protected $seed = true;
 
     /**
      * Test get all invoice data.
