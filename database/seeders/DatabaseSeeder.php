@@ -2,12 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\Counter;
-use App\Models\Customer;
-use App\Models\Invoice;
-use App\Models\InvoiceItem;
-use App\Models\Product;
+use App\Models\Counter\Counter;
+use App\Models\Invoice\Invoice;
+use App\Models\Product\Product;
 use Illuminate\Database\Seeder;
+use App\Models\Customer\Customer;
+use App\Models\InvoiceItem\InvoiceItem;
 
 class DatabaseSeeder extends Seeder
 {

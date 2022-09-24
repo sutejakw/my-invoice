@@ -1,12 +1,15 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\Factories\Invoice;
 
-use App\Models\Customer;
+use App\Models\Invoice\Invoice;
+use App\Models\Customer\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class InvoiceFactory extends Factory
 {
+    protected $model = Invoice::class;
+
     /**
      * Define the model's default state.
      *
@@ -15,7 +18,7 @@ class InvoiceFactory extends Factory
     public function definition()
     {
         return [
-            'number' => $this->faker->numberBetween(10, 1000),
+            'number' => 'INV-'.$this->faker->numberBetween(10, 1000),
             'customer_id' => Customer::get()->random()->id,
             'date' => $this->faker->date,
             'due_date' => $this->faker->date,

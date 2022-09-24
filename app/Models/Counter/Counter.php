@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Counter;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class InvoiceItem extends Model
+class Counter extends Model
 {
     use HasFactory;
 }

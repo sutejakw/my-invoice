@@ -1,17 +1,37 @@
 <script setup>
-import axios from "axios";
 import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 let invoices = ref([]);
+let searchInvoice = ref([]);
 
 onMounted(async () => {
     getInvoices();
 });
 
 const getInvoices = async () => {
-    let response = await axios.get("/api/invoices");
-    invoices.value = response.data.invoices;
-    console.log(invoices.value);
+    await axios.get("/api/invoices").then((response) => {
+        invoices.value = response.data.data;
+    });
+};
+
+const search = async () => {
+    await axios
+        .get(`/api/invoices/search?s=${searchInvoice.value}`)
+        .then((response) => {
+            invoices.value = response.data.data;
+        });
+};
+
+const newInvoice = async () => {
+    await axios.get("/api/invoices/create").then(() => {
+        router.push("/create");
+    });
+};
+
+const onShow = (id) => {
+    router.push(`/show/${id}`);
 };
 </script>
 
@@ -24,7 +44,9 @@ const getInvoices = async () => {
                     <h2 class="invoice__title">Invoices</h2>
                 </div>
                 <div>
-                    <a class="btn btn-secondary"> New Invoice </a>
+                    <a class="btn btn-secondary" @click="newInvoice">
+                        New Invoice
+                    </a>
                 </div>
             </div>
 
@@ -61,6 +83,8 @@ const getInvoices = async () => {
                             class="table--search--input"
                             type="text"
                             placeholder="Search invoice"
+                            v-model="searchInvoice"
+                            @keyup="search()"
                         />
                     </div>
                 </div>
@@ -75,28 +99,30 @@ const getInvoices = async () => {
                 </div>
 
                 <!-- item 1 -->
-                <div v-if="invoices.length > 0">
-                    <div
-                        class="table--items"
-                        v-for="invoice in invoices"
-                        :key="invoice.id"
+                <div
+                    class="table--items"
+                    v-if="invoices.length > 0"
+                    v-for="invoice in invoices"
+                    :key="invoice.id"
+                >
+                    <a
+                        href="#"
+                        class="table--items--transactionId"
+                        @click="onShow(invoice.id)"
+                        >#{{ invoice.id }}</a
                     >
-                        <a href="#" class="table--items--transactionId"
-                            >#{{ invoice.id }}</a
-                        >
-                        <p>{{ invoice.date }}</p>
-                        <p>#{{ invoice.number }}</p>
-                        <p>
-                            {{ invoice.customer.firstname }}
-                            {{ invoice.customer.lastname }}
-                        </p>
-                        <p>{{ invoice.due_date }}</p>
-                        <p>$ {{ invoice.total }}</p>
-                    </div>
+                    <p>{{ invoice.date }}</p>
+                    <p>#{{ invoice.number }}</p>
+                    <p>
+                        {{ invoice.customer.fullname }}
+                    </p>
+                    <p>{{ invoice.due_date }}</p>
+                    <p>$ {{ invoice.total }}</p>
                 </div>
-                <!-- <div class="table--items" v-else>
+
+                <div class="table--items text-center" v-else>
                     <p>Invoice not found</p>
-                </div> -->
+                </div>
             </div>
         </div>
     </div>
