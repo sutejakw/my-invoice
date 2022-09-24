@@ -19,15 +19,15 @@ onMounted(async () => {
 });
 
 const indexForm = async () => {
-    const response = await axios.get("/api/invoices/create");
-
-    form.value = response.data.data;
+    await axios.get("/api/invoices/create").then((response) => {
+        form.value = response.data.data;
+    });
 };
 
 const getAllCustomers = async () => {
-    const response = await axios.get("/api/customers");
-
-    allCustomers.value = response.data.data;
+    await axios.get("/api/customers").then((response) => {
+        allCustomers.value = response.data.data;
+    });
 };
 
 const addCart = (item) => {
@@ -52,9 +52,9 @@ const closeModal = () => {
 };
 
 const getProducts = async () => {
-    let response = await axios.get("/api/products");
-
-    listProducts.value = response.data.data;
+    await axios.get("/api/products").then((response) => {
+        listProducts.value = response.data.data;
+    });
 };
 
 const removeItem = (i) => {
@@ -83,9 +83,8 @@ const onSave = async () => {
         subtotal = subTotal();
 
         let grandtotal = 0;
-        grandtotal = subTotal();
+        grandtotal = grandTotal();
 
-        // try {
         await axios
             .post("/api/invoices/store", {
                 customer_id: customer_id.value,
@@ -99,17 +98,13 @@ const onSave = async () => {
                 terms_and_conditions: form.value.terms_and_conditions,
                 invoice_item: JSON.stringify(listCarts.value),
             })
-            .then((response) => {
-                // redirect to home
+            .then(() => {
                 listCarts.value = [];
                 router.push("/");
             })
             .catch((error) => {
                 alert(error.response.data.message);
             });
-        // } catch (e) {
-        //     alert(e.response.data.message);
-        // }
     }
 };
 </script>

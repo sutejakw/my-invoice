@@ -24,6 +24,7 @@ class InvoiceResource extends JsonResource
             'discount' => $this->discount,
             'total' => $this->total,
             'terms_and_conditions' => $this->terms_and_conditions,
+            'reference' => $this->reference,
             'created_at' => $this->created_at,
             'customer' => new CustomerResource($this->customer),
             'items' => InvoiceItemResource::collection($this->items),

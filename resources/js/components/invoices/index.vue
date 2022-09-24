@@ -11,23 +11,23 @@ onMounted(async () => {
 });
 
 const getInvoices = async () => {
-    let response = await axios.get("/api/invoices");
-
-    invoices.value = response.data.data;
+    await axios.get("/api/invoices").then((response) => {
+        invoices.value = response.data.data;
+    });
 };
 
 const search = async () => {
-    let response = await axios.get(
-        `/api/invoices/search?s=${searchInvoice.value}`
-    );
-
-    invoices.value = response.data.data;
+    await axios
+        .get(`/api/invoices/search?s=${searchInvoice.value}`)
+        .then((response) => {
+            invoices.value = response.data.data;
+        });
 };
 
 const newInvoice = async () => {
-    let form = await axios.get("/api/invoices/create");
-
-    router.push("/create");
+    await axios.get("/api/invoices/create").then(() => {
+        router.push("/create");
+    });
 };
 
 const onShow = (id) => {
@@ -99,27 +99,26 @@ const onShow = (id) => {
                 </div>
 
                 <!-- item 1 -->
-                <template v-if="invoices.length > 0">
-                    <div
-                        class="table--items"
-                        v-for="invoice in invoices"
-                        :key="invoice.id"
+                <div
+                    class="table--items"
+                    v-if="invoices.length > 0"
+                    v-for="invoice in invoices"
+                    :key="invoice.id"
+                >
+                    <a
+                        href="#"
+                        class="table--items--transactionId"
+                        @click="onShow(invoice.id)"
+                        >#{{ invoice.id }}</a
                     >
-                        <a
-                            href="#"
-                            class="table--items--transactionId"
-                            @click="onShow(invoice.id)"
-                            >#{{ invoice.id }}</a
-                        >
-                        <p>{{ invoice.date }}</p>
-                        <p>#{{ invoice.number }}</p>
-                        <p>
-                            {{ invoice.customer.fullname }}
-                        </p>
-                        <p>{{ invoice.due_date }}</p>
-                        <p>$ {{ invoice.total }}</p>
-                    </div>
-                </template>
+                    <p>{{ invoice.date }}</p>
+                    <p>#{{ invoice.number }}</p>
+                    <p>
+                        {{ invoice.customer.fullname }}
+                    </p>
+                    <p>{{ invoice.due_date }}</p>
+                    <p>$ {{ invoice.total }}</p>
+                </div>
 
                 <div class="table--items text-center" v-else>
                     <p>Invoice not found</p>

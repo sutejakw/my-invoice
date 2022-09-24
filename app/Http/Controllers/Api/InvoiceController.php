@@ -33,9 +33,8 @@ class InvoiceController extends Controller
         }
     }
 
-
     /**
-     * Search invoice by id
+     * Search invoice by id.
      * 
      * @param \Illuminate\Http\Request  $request
      * @return JsonResponse
@@ -58,7 +57,7 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Create a new invoice
+     * Create a new invoice.
      * 
      * @return JsonResponse
      */
@@ -97,7 +96,7 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Create a new invoice
+     * Create a new invoice,
      * 
      * @param \Illuminate\Http\Request  $request
      * @return JsonResponse
@@ -136,6 +135,12 @@ class InvoiceController extends Controller
         }
     }
 
+    /**
+     * Get one invoice.
+     * 
+     * @param int $id
+     * @return JsonResponse
+     */
     public function show($id): JsonResponse 
     {
         try {
@@ -143,6 +148,61 @@ class InvoiceController extends Controller
             $invoice = new InvoiceResource($resource);
 
             return ResponseFormatter::success($invoice);
+        } catch (Exception $e) {
+            return ResponseFormatter::error(null, $e->getMessage());
+        }
+    }
+
+    /**
+     * Update invoice.
+     * 
+     * @param \Illuminate\Http\Request  $request, $id
+     * @return JsonResponse
+     */
+    public function update(Request $request, $id): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $invoice = Invoice::findOrFail($id);
+            $invoice->update([
+                'customer_id' => $request->customer_id,
+                'date' => $request->date,
+                'due_date' => $request->due_date,
+                'number' => $request->number,
+                'reference' => $request->ference,
+                'discount' => $request->discount,
+                'sub_total' => $request->sub_total,
+                'total' => $request->total,
+                'terms_and_conditions' => $request->terms_and_conditions,
+            ]);
+
+            $invoice->items()->delete();
+
+            foreach (json_decode($request->invoice_item) as $invoice_item) {
+                InvoiceItem::create([
+                    'invoice_id' => $invoice->id,
+                    'product_id' => $invoice_item->product_id,
+                    'unit_price' => $invoice_item->unit_price,
+                    'quantity' => $invoice_item->quantity,
+                ]);
+            }
+            DB::commit();
+
+            return ResponseFormatter::success($invoice, 'Invoice update successfully');
+        } catch (Exception $e) {
+
+            return ResponseFormatter::error(null, $e->getMessage());
+            DB::rollBack();
+        }
+    }
+
+    public function destroy($id)
+    {
+        $invoice = Invoice::findOrFail($id);
+        try {
+            $invoice->delete();
+
+            return ResponseFormatter::success(null, 'Invoice deleted successfully');
         } catch (Exception $e) {
             return ResponseFormatter::error(null, $e->getMessage());
         }

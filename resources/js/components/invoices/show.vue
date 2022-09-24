@@ -3,7 +3,6 @@ import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 let form = ref([]);
-let customer = ref([]);
 const router = useRouter();
 
 const props = defineProps({
@@ -18,10 +17,9 @@ onMounted(async () => {
 });
 
 const getInvoice = async () => {
-    let response = await axios.get(`/api/invoices/show/${props.id}`);
-    form.value = response.data.data;
-    console.log(form.value);
-    customer.value = form.value.customer;
+    await axios.get(`/api/invoices/${props.id}`).then((response) => {
+        form.value = response.data.data;
+    });
 };
 
 const goHome = () => {
@@ -35,6 +33,16 @@ const print = () => {
 
 const onEdit = (id) => {
     router.push(`/edit/${id}`);
+};
+
+const onDelete = (id) => {
+    if (confirm("Do you really want to delete?")) {
+        if (id != undefined) {
+            axios.delete(`/api/invoices/${id}`).then(() => {
+                goHome();
+            });
+        }
+    }
 };
 </script>
 <template>
@@ -77,7 +85,10 @@ const onEdit = (id) => {
                         </li>
                         <li>
                             <!-- Select Btn Option -->
-                            <button class="selectBtnFlat">
+                            <button
+                                class="selectBtnFlat"
+                                @click="onDelete(form.id)"
+                            >
                                 <i class="fas fa-pencil-alt"></i>
                                 Delete
                             </button>
@@ -104,7 +115,9 @@ const onEdit = (id) => {
                 <div class="invoice__header--item">
                     <div>
                         <h2>Invoice To:</h2>
-                        <p>{{ customer.firstname }}</p>
+                        <p v-if="form.customer">
+                            {{ form.customer.fullname }}
+                        </p>
                     </div>
                     <div>
                         <div class="invoice__header--item1">
@@ -142,7 +155,10 @@ const onEdit = (id) => {
                         :key="item.id"
                     >
                         <p>{{ i + 1 }}</p>
-                        <p>{{ item.product.description }}</p>
+                        <p v-if="item.product">
+                            {{ item.product.description }}
+                        </p>
+                        <p v-else>-</p>
                         <p>$ {{ item.unit_price }}</p>
                         <p>{{ item.quantity }}</p>
                         <p>$ {{ item.unit_price * item.quantity }}</p>
@@ -160,7 +176,7 @@ const onEdit = (id) => {
                         </div>
                         <div class="invoice__subtotal--item2">
                             <p>Discount</p>
-                            <span>$ {{ form.discount }}</span>
+                            <span>{{ form.discount }} %</span>
                         </div>
                     </div>
                 </div>
