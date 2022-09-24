@@ -99,4 +99,17 @@ class InvoiceTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    /**
+     * Test show invoice.
+     *
+     * @return void
+     */
+    public function test_show_invoice(): void
+    {
+        $invoice = Invoice::factory()->create();
+
+        $response = $this->get('/api/invoices/show/'.$invoice->id);
+        $response->assertStatus(200);
+    }
 }
