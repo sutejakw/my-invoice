@@ -89,7 +89,7 @@ class InvoiceTest extends TestCase
             'number' => 'INV-'.$this->faker->numberBetween(1, 1000),
             'reference' => $this->faker->word,
             'discount' => $discount,
-            'subtotal' => $sub_total,
+            'sub_total' => $sub_total,
             'total' => $grand_total,
             'terms_and_conditions' => $this->faker->sentence(3),
             'invoice_item' => json_encode($invoice_items, true),
@@ -110,6 +110,22 @@ class InvoiceTest extends TestCase
         $invoice = Invoice::factory()->create();
 
         $response = $this->get('/api/invoices/show/'.$invoice->id);
+        $response->assertStatus(200);
+    }
+
+    /**
+     * Test delete invoice.
+     *
+     * @return void
+     */
+    public function test_delete_invoice(): void
+    {
+        $invoice = Invoice::factory()->create();
+
+        $response = $this->delete(route('invoices.destroy', [
+            'id' => $invoice->id
+        ]));
+
         $response->assertStatus(200);
     }
 }
