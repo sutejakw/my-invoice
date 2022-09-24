@@ -29,6 +29,10 @@ const newInvoice = async () => {
 
     router.push("/create");
 };
+
+const onShow = (id) => {
+    router.push(`/show/${id}`);
+};
 </script>
 
 <template>
@@ -95,13 +99,16 @@ const newInvoice = async () => {
                 </div>
 
                 <!-- item 1 -->
-                <div v-if="invoices.length > 0">
+                <template v-if="invoices.length > 0">
                     <div
                         class="table--items"
                         v-for="invoice in invoices"
                         :key="invoice.id"
                     >
-                        <a href="#" class="table--items--transactionId"
+                        <a
+                            href="#"
+                            class="table--items--transactionId"
+                            @click="onShow(invoice.id)"
                             >#{{ invoice.id }}</a
                         >
                         <p>{{ invoice.date }}</p>
@@ -112,10 +119,11 @@ const newInvoice = async () => {
                         <p>{{ invoice.due_date }}</p>
                         <p>$ {{ invoice.total }}</p>
                     </div>
-                </div>
-                <!-- <div class="table--items" v-else>
+                </template>
+
+                <div class="table--items text-center" v-else>
                     <p>Invoice not found</p>
-                </div> -->
+                </div>
             </div>
         </div>
     </div>

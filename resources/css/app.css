@@ -598,3 +598,7 @@ ul {
 .grand__total--items span {
     font-size: 26px;
 }
+
+.text-center {
+    text-align: center;
+}

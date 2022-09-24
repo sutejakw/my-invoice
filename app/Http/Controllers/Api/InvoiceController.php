@@ -113,7 +113,7 @@ class InvoiceController extends Controller
                 'number' => $request->number,
                 'reference' => $request->ference,
                 'discount' => $request->discount,
-                'sub_total' => $request->subtotal,
+                'sub_total' => $request->sub_total,
                 'total' => $request->total,
                 'terms_and_conditions' => $request->terms_and_conditions,
             ]);
@@ -133,6 +133,18 @@ class InvoiceController extends Controller
 
             return ResponseFormatter::error(null, $e->getMessage());
             DB::rollBack();
+        }
+    }
+
+    public function show($id): JsonResponse 
+    {
+        try {
+            $resource = Invoice::with(['customer', 'items'])->findOrFail($id);
+            $invoice = new InvoiceResource($resource);
+
+            return ResponseFormatter::success($invoice);
+        } catch (Exception $e) {
+            return ResponseFormatter::error(null, $e->getMessage());
         }
     }
 }

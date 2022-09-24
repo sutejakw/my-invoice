@@ -19,9 +19,14 @@ class InvoiceResource extends JsonResource
             'id' => $this->id,
             'date' => $this->date,
             'number' => $this->number,
-            'customer' => new CustomerResource($this->customer),
             'due_date' => $this->due_date,
-            'total' => $this->total
+            'sub_total' => $this->sub_total,
+            'discount' => $this->discount,
+            'total' => $this->total,
+            'terms_and_conditions' => $this->terms_and_conditions,
+            'created_at' => $this->created_at,
+            'customer' => new CustomerResource($this->customer),
+            'items' => InvoiceItemResource::collection($this->items),
         ];
     }
 }
