@@ -12,6 +12,7 @@ let customer_id = ref([]);
 const showModal = ref(false);
 const hideModal = ref(true);
 let listProducts = ref([]);
+const errors = ref("");
 
 onMounted(async () => {
     getInvoice();
@@ -116,7 +117,13 @@ const onEdit = async (id) => {
                 router.push("/");
             })
             .catch((error) => {
-                alert(error.response.data.message);
+                if (error.response.status === 422) {
+                    Object.values(error.response.data.errors).forEach((val) => {
+                        errors.value += `${val[0]} \n`;
+                    });
+                    alert(errors.value);
+                    errors.value = "";
+                }
             });
     }
 };

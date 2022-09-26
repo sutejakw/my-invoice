@@ -111,7 +111,7 @@ class InvoiceController extends Controller
                 'date' => $request->date,
                 'due_date' => $request->due_date,
                 'number' => $request->number,
-                'reference' => $request->ference,
+                'reference' => $request->reference,
                 'discount' => $request->discount,
                 'sub_total' => $request->sub_total,
                 'total' => $request->total,
