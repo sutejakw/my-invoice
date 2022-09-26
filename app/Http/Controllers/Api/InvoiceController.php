@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Requests\Invoice\StoreInvoiceRequest;
+use App\Http\Requests\Invoice\UpdateInvoiceRequest;
 use App\Models\InvoiceItem\InvoiceItem;
 
 class InvoiceController extends Controller
@@ -159,7 +160,7 @@ class InvoiceController extends Controller
      * @param \Illuminate\Http\Request  $request, $id
      * @return JsonResponse
      */
-    public function update(Request $request, $id): JsonResponse
+    public function update(UpdateInvoiceRequest $request, $id): JsonResponse
     {
         DB::beginTransaction();
         try {
@@ -169,7 +170,7 @@ class InvoiceController extends Controller
                 'date' => $request->date,
                 'due_date' => $request->due_date,
                 'number' => $request->number,
-                'reference' => $request->ference,
+                'reference' => $request->reference,
                 'discount' => $request->discount,
                 'sub_total' => $request->sub_total,
                 'total' => $request->total,

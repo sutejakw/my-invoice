@@ -4,7 +4,7 @@ namespace App\Http\Requests\Invoice;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreInvoiceRequest extends FormRequest
+class UpdateInvoiceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,7 +27,7 @@ class StoreInvoiceRequest extends FormRequest
             'customer_id' => 'required|exists:customers,id',
             'due_date' => 'required',
             'reference' => 'required',
-            'number' => 'required|unique:invoices,id'
+            'number' => 'required|unique:invoices,number,'.$this->id
         ];
     }
 }
